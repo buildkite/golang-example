@@ -7,7 +7,7 @@ out https://github.com/buildkite/golang-docker-example
 
 [Add this example to your Buildkite organization](https://buildkite.com/new)
 
-## Using in your own Build Pipelines
+## Using in your own build pipelines
 
 We've wrapped up the `$GOPATH` wrangling required to get Golang projects to run
 into a `pre-command` hook which you can see here:
