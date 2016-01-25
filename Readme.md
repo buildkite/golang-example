@@ -16,7 +16,7 @@ To use in your own build pipelines:
 
 1. Copy the `pre-command` hook into your project:
 
-```bash
+```shell
 $ cd /your/golang/repo
 $ mkdir -p .buildkite/hooks
 $ curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
