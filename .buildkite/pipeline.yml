@@ -1,3 +1,5 @@
 steps:
-  - name: ":golang:"
+  - name: "🔨"
     command: "./scripts/test.sh"
+  - name: ":golang:"
+    command: "./scripts/run.sh"
