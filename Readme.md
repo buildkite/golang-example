@@ -13,12 +13,12 @@ path location. So the new build directory would look something like this:
 We've wrapped the setup into a Buildkite `pre-command` hook which you can see here:
 https://github.com/buildkite/golang-example/blob/master/.buildkite/hooks/pre-command
 
-To use the hook in your build pipelines, copy the `pre-command` file into the
-Buildkite hooks directory within your repository `.buildkite/hooks/`. Then
+To use the hook in your own build pipelines, copy the `pre-command` file into
+the Buildkite hooks directory within your repository `.buildkite/hooks/`. Then
 define an environment variable `BUILDKTE_GOLANG_IMPORT_PATH` that contains the
 import path to your current repository, i.e:
 
-```bash
+```yml
 steps:
   - command: "./scripts/test.sh"
     env:
