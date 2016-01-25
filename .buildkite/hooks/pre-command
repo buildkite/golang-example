@@ -1,11 +1,18 @@
 #!/bin/bash
 
+set +u
+
 echo "--- :golang: Setting up Golang build environment"
 
-NEW_GOPATH=$(pwd)/tmp/go
+if [[ ! -z "${BUILDKTE_GOLANG_IMPORT_PATH:-}" ]] && [[ "$BUILDKTE_GOLANG_IMPORT_PATH" != "" ]]; then
 
-mkdir -p $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
-ln -fs $(pwd) $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
+  NEW_GOPATH=$(pwd)/tmp/go
 
-export GOPATH=$NEW_GOPATH
-echo "New \$GOPATH is set to $NEW_GOPATH"
+  mkdir -p $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
+  ln -fs $(pwd) $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
+
+  export GOPATH=$NEW_GOPATH
+  echo "New \$GOPATH is set to $NEW_GOPATH"
+else
+  echo "No \$BUILDKTE_GOLANG_IMPORT_PATH set, skipping..."
+fi
