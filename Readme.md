@@ -16,33 +16,33 @@ To use in your own build pipelines:
 
 1. Copy the `pre-command` hook into your project:
 
-```sh
-cd /your/golang/repo
-mkdir -p .buildkite/hooks
-curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
-chmod +x .buildkite/hooks/pre-command
-```
+   ```sh
+   cd /your/golang/repo
+   mkdir -p .buildkite/hooks
+   curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
+   chmod +x .buildkite/hooks/pre-command
+   ```
 
 2. Add `BUILDKTE_GOLANG_IMPORT_PATH` to your build steps. If your import path in Golang looks like this:
 
-```go
-import (
-  "github.com/keithpitt/project/sub-package"
-)
-```
+   ```go
+   import (
+     "github.com/keithpitt/project/sub-package"
+   )
+   ```
 
-Then your `BUILDKTE_GOLANG_IMPORT_PATH` would be `github.com/keithpitt/project`
-(we don't include the `sub-package` part of the import). This path should also match
-the directory structure within the `$GOPATH` on your own development machine.
+   Then your `BUILDKTE_GOLANG_IMPORT_PATH` would be `github.com/keithpitt/project`
+   (we don't include the `sub-package` part of the import). This path should also match
+   the directory structure within the `$GOPATH` on your own development machine.
 
-You can add the `$BUILDKITE_BUILD_CHECKOUT_PATH` to your `.pipeline.yml` file like this:
+   You can add the `$BUILDKITE_BUILD_CHECKOUT_PATH` to your `.pipeline.yml` file like this:
 
-```yml
-steps:
-  - command: "./scripts/test.sh"
-    env:
-      BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
-```
+   ```yml
+   steps:
+     - command: "./scripts/test.sh"
+       env:
+         BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
+   ```
 
 ## How does it work?
 
