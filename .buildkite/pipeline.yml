@@ -1,6 +1,5 @@
-env:
-  BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
-
 steps:
   - name: ":golang:"
     command: "./scripts/test.sh"
+    env:
+      BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
