@@ -16,16 +16,16 @@ To use in your own build pipelines:
 
 1. Copy the `pre-command` hook into your project:
 
-```shell
-$ cd /your/golang/repo
-$ mkdir -p .buildkite/hooks
-$ curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
-$ chmod +x .buildkite/hooks/pre-command
+```sh
+cd /your/golang/repo
+mkdir -p .buildkite/hooks
+curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
+chmod +x .buildkite/hooks/pre-command
 ```
 
 2. Add `BUILDKTE_GOLANG_IMPORT_PATH` to your build steps. If your import path in Golang looks like this:
 
-```golang
+```go
 import (
   "github.com/keithpitt/project/sub-package"
 )
