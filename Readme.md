@@ -1,8 +1,9 @@
 # Buildkite Golang Example
 
 This repository is an example on how to test a Golang project using Buildkite.
-Interested in using Docker instead? Check out
-https://github.com/buildkite/golang-docker-example
+
+Interested in using Docker instead? (which is way mega simpler than this) Check
+out https://github.com/buildkite/golang-docker-example
 
 [Add this example to your Buildkite organization](https://buildkite.com/new)
 
@@ -47,7 +48,7 @@ To use in your own build pipelines:
 ## How does it work?
 
 Testing Golang projects can be tricky due to how Golang handles it's `$GOPATH`.
-What our `pre-command` hook does, is create an entirely new `$GOPATH` tree
+What our `pre-command` hook does is create an entirely new `$GOPATH` tree
 within the current build directory (under `tmp/go`), and symlink the current
 build directory to the desired go import path location. So the new build
 directory would look something like this:
@@ -56,10 +57,6 @@ directory would look something like this:
 
 The hook then changes the working directory to this new folder, so all of your
 build commands happen within the directory.
-
-## Docker
-
-To see how to run your Golang projects through Docker and Buildkite, see
 
 ## License
 
