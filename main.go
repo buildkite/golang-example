@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/buildkite/golang-example/logger"
 )
 
 func main() {
-	fmt.Print("This is the best Golang program, ever!\n")
+	logger.Print("This is the best Golang program, ever!\n")
 }
