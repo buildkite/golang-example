@@ -1,6 +1,11 @@
 #!/bin/bash
 
-set +u
+echo "--- :golang: Setting up Golang build environment"
 
-echo "--- :golang: Updating \$GOPATH"
-export GOPATH=$GOPATH:$(pwd)
+NEW_GOPATH=$(pwd)/tmp/go
+
+mkdir -p $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
+ln -fs $(pwd) $NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH
+
+export GOPATH=$NEW_GOPATH
+echo "New \$GOPATH is set to $NEW_GOPATH"
