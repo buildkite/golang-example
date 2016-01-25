@@ -1,6 +1,0 @@
-#!/bin/bash
-
-set +u
-
-echo "--- :golang: Updating \$GOPATH"
-export GOPATH=$GOPATH:$(pwd)
