@@ -1,0 +1,5 @@
+steps:
+  - name: ":golang:"
+    command: >
+            go get -t
+            go test
