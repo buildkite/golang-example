@@ -1,22 +1,41 @@
 # Buildkite Golang Example
 
 This repository is an example on how to test a Golang project using Buildkite.
+Interested in using Docker instead? Check out
+https://github.com/buildkite/golang-docker-example
 
-Testing Golang projects can be tricky due to how Golang handles it's `$GOPATH`.
-The best way we've found so far to create a working `$GOPATH` directory is to
-create an entirely new `$GOPATH` tree within the current build directory (under
-`tmp/go`), and symlink the current build directory to the desired go import
-path location. So the new build directory would look something like this:
+[Add this example to your Buildkite organization](https://buildkite.com/new)
 
-`$BUILDKITE_BUILD_CHECKOUT_PATH/tmp/go/src/github.com/buildkite/golang-example`
+## Using in your own Build Pipelines
 
-We've wrapped the setup into a Buildkite `pre-command` hook which you can see here:
+We've wrapped up the `$GOPATH` wrangling required to get Golang projects to run
+into a `pre-command` hook which you can see here:
 https://github.com/buildkite/golang-example/blob/master/.buildkite/hooks/pre-command
 
-To use the hook in your own build pipelines, copy the `pre-command` file into
-the Buildkite hooks directory within your repository `.buildkite/hooks/`. Then
-define an environment variable `BUILDKTE_GOLANG_IMPORT_PATH` that contains the
-import path to your current repository, i.e:
+To use in your own build pipelines:
+
+1. Copy the `pre-command` hook into your project:
+
+```bash
+$ cd /your/golang/repo
+$ mkdir -p .buildkite/hooks
+$ curl -o .buildkite/hooks/pre-command https://raw.githubusercontent.com/buildkite/golang-example/master/.buildkite/hooks/pre-command
+$ chmod +x .buildkite/hooks/pre-command
+```
+
+2. Add `BUILDKTE_GOLANG_IMPORT_PATH` to your build steps. If your import path in Golang looks like this:
+
+```golang
+import (
+  "github.com/keithpitt/project/sub-package"
+)
+```
+
+Then your `BUILDKTE_GOLANG_IMPORT_PATH` would be `github.com/keithpitt/project`
+(we don't include the `sub-package` part of the import). This path should also match
+the directory structure within the `$GOPATH` on your own development machine.
+
+You can add the `$BUILDKITE_BUILD_CHECKOUT_PATH` to your `.pipeline.yml` file like this:
 
 ```yml
 steps:
@@ -25,11 +44,22 @@ steps:
       BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
 ```
 
-[Add this pipeline to your Buildkite organization](https://buildkite.com/new)
+## How does it work?
+
+Testing Golang projects can be tricky due to how Golang handles it's `$GOPATH`.
+What our `pre-command` hook does, is create an entirely new `$GOPATH` tree
+within the current build directory (under `tmp/go`), and symlink the current
+build directory to the desired go import path location. So the new build
+directory would look something like this:
+
+`$BUILDKITE_BUILD_CHECKOUT_PATH/tmp/go/src/github.com/buildkite/golang-example`
+
+The hook then changes the working directory to this new folder, so all of your
+build commands happen within the directory.
 
 ## Docker
 
-To see how to run your Golang projects through Docker and Buildkite, see https://github.com/buildkite/golang-docker-example
+To see how to run your Golang projects through Docker and Buildkite, see
 
 ## License
 
