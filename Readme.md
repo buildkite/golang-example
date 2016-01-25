@@ -4,9 +4,10 @@ This repository is an example on how to test a Golang project using Buildkite.
 
 Testing Golang projects can be tricky due to how Golang handles it's `$GOPATH`.
 The best way we've found so far to create a working `$GOPATH` directory is to
-create an entirely new `$GOPATH` tree within the current build folder (under a
-`tmp/go` folder), and symlink the current build folder to the desired go import
-path location. So the new build folder would look something like this:
+create an entirely new `$GOPATH` tree within the current build directory (under
+a `tmp/go` directory), and symlink the current build directory to the desired
+go import path location. So the new build directory would look something like
+this:
 
 `$BUILDKITE_BUILD_CHECKOUT_PATH/tmp/go/src/github.com/buildkite/golang-example`
 
