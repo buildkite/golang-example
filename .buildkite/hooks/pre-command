@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "--- :golang: Updating \$GOPATH"
+export GOPATH=$GOPATH:$(pwd)
