@@ -1,6 +1,6 @@
 # Buildkite Golang Example
 
-This repository is an example on how to test a Golang program using Buildkite.
+This repository is an example on how to test a Golang project using Buildkite.
 
 Testing Golang projects can be a bit tricky due to how Golang handles it's
 $GOPATH. The best way we've found so far is to create an entirely new $GOPATH
