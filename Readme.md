@@ -2,7 +2,7 @@
 
 This repository is an example on how to test a Golang project using Buildkite.
 
-Interested in using Docker instead? (which is way mega simpler than this) Check
+Interested in using Docker instead? _(which is way mega simpler than this)_ Check
 out https://github.com/buildkite/golang-docker-example
 
 [Add this example to your Buildkite organization](https://buildkite.com/new)
