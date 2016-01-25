@@ -20,6 +20,8 @@ steps:
       BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
 ```
 
+[Add this pipeline to your Buildkite organization](https://buildkite.com/new)
+
 ## Docker
 
 To see how to run your Golang projects through Docker and Buildkite, see https://github.com/buildkite/golang-docker-example
