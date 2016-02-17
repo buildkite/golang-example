@@ -1,6 +1,5 @@
 {
   "name": "Golang Example",
-  "repository": "https://github.com/buildkite/golang-example.git",
   "steps": [
     {
       "type": "script",
