@@ -1,5 +1,16 @@
 steps:
-  - name: ":golang:"
+  - name: ":wave:"
+    command: "./scripts/hello.sh"
+
+  - name: ":golang: :white_check_mark:"
     command: "./scripts/test.sh"
-    env:
-      BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
+    plugins:
+      golang#alternative-alternative-approach:
+        import: "github.com/buildkite/golang-example"
+
+  - name: ":golang: :hammer:"
+    command: "./scripts/build.sh"
+    artifact_paths: "dist/**/*"
+    plugins:
+      golang#alternative-alternative-approach:
+        import: "github.com/buildkite/golang-example"
