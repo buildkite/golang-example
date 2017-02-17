@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eu
+
+echo "--- :golang: Setting up Golang build environment"
+
+if [[ ! -z "${BUILDKTE_GOLANG_IMPORT_PATH:-}" ]]; then
+  export GOPATH="$BUILDKITE_BUILD_CHECKOUT_PATH"
+  export BUILDKITE_CHECKOUT_PATH="$BUILDKITE_BUILD_CHECKOUT_PATH/src/$BUILDKTE_GOLANG_IMPORT_PATH"
+else
+  echo "No \$BUILDKTE_GOLANG_IMPORT_PATH set, skipping..."
+fi
