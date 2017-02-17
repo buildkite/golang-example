@@ -2,7 +2,7 @@ steps:
   - name: ":golang:"
     command: "go test"
     plugins:
-      golang#ecfc237:
+      golang#f916239:
         import: "github.com/buildkite/golang-example"
     agents:
       queue: "$BUILDKITE_AGENT_META_DATA_QUEUE"
