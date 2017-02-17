@@ -4,5 +4,5 @@ steps:
     plugins:
       golang:
         import: "github.com/buildkite/golang-example"
-    agent:
+    agents:
       queue: "$BUILDKITE_AGENT_META_DATA_QUEUE"
