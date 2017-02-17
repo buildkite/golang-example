@@ -1,5 +1,8 @@
 steps:
   - name: ":golang:"
-    command: "./scripts/test.sh"
-    env:
-      BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
+    command: "go test"
+    plugins:
+      golang:
+        import: "github.com/buildkite/golang-example"
+    agent:
+      queue: "$BUILDKITE_AGENT_META_DATA_QUEUE"
