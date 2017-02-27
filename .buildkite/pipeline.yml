@@ -5,4 +5,4 @@ steps:
       golang#v0.2:
         import: "github.com/buildkite/golang-example"
     agents:
-      queue: "$BUILDKITE_AGENT_META_DATA_QUEUE"
+      queue: "${BUILDKITE_AGENT_META_DATA_QUEUE-default}"
