@@ -1,6 +1,6 @@
 steps:
   - name: ":golang:"
-    command: "go get -t -d && go test"
+    command: "go get -t -d && go test -race -v github.com/buildkite/golang-example"
     plugins:
       golang#v0.2:
         import: "github.com/buildkite/golang-example"
