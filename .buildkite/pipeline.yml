@@ -2,7 +2,7 @@ steps:
   - name: ":golang:"
     command: "go get -t -d && go test"
     plugins:
-      golang#v0.1:
+      golang#v0.2:
         import: "github.com/buildkite/golang-example"
     agents:
       queue: "$BUILDKITE_AGENT_META_DATA_QUEUE"
