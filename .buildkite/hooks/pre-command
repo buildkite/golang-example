@@ -4,9 +4,9 @@ set +u
 
 echo "--- :golang: Setting up Golang build environment"
 
-if [[ ! -z "${BUILDKTE_GOLANG_IMPORT_PATH:-}" ]] && [[ "$BUILDKTE_GOLANG_IMPORT_PATH" != "" ]]; then
+if [[ ! -z "${BUILDKITE_GOLANG_IMPORT_PATH:-}" ]] && [[ "$BUILDKITE_GOLANG_IMPORT_PATH" != "" ]]; then
   NEW_GOPATH="$(pwd)/tmp/go"
-  NEW_BUILD_CHECKOUT_PATH="$NEW_GOPATH/src/$BUILDKTE_GOLANG_IMPORT_PATH"
+  NEW_BUILD_CHECKOUT_PATH="$NEW_GOPATH/src/$BUILDKITE_GOLANG_IMPORT_PATH"
 
   # Create the regular GOPATH folders
   mkdir -p "$NEW_GOPATH/bin"
@@ -24,5 +24,5 @@ if [[ ! -z "${BUILDKTE_GOLANG_IMPORT_PATH:-}" ]] && [[ "$BUILDKTE_GOLANG_IMPORT_
 
   export BUILDKITE_BUILD_CHECKOUT_PATH=$NEW_BUILD_CHECKOUT_PATH
 else
-  echo "No \$BUILDKTE_GOLANG_IMPORT_PATH set, skipping..."
+  echo "No \$BUILDKITE_GOLANG_IMPORT_PATH set, skipping..."
 fi
