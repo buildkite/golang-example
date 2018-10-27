@@ -1,5 +1,6 @@
 steps:
   - name: ":golang:"
     command: "./scripts/test.sh"
-    env:
-      BUILDKTE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
+    plugins:
+      gopath-checkout#v1.0.1:
+        import: github.com/keithpitt/project/sub-package
