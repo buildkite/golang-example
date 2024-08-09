@@ -2,11 +2,12 @@ package main
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 
-	"os"
-	"io"
 	"bytes"
+	"io"
+	"os"
 )
 
 func TestMain(t *testing.T) {

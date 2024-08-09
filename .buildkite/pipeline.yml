@@ -1,5 +1,5 @@
 steps:
-  - name: ":golang:"
-    command: "./scripts/test.sh"
-    env:
-      BUILDKITE_GOLANG_IMPORT_PATH: "github.com/buildkite/golang-example"
+  - name: ":golang: test"
+    command: "go test -v ./..."
+  - name: ":golang: vet"
+    command: "go vet ./..."
