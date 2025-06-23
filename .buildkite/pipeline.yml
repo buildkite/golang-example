@@ -1,5 +1,7 @@
 steps:
-  - name: ":golang: test"
-    command: "go test -v ./..."
-  - name: ":golang: vet"
-    command: "go vet ./..."
+  - label: ":go: Run tests"
+    command: |
+      go version
+      go test -v ./...
+    agents:
+      queue: golang-example
