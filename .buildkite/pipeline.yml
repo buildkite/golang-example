@@ -3,11 +3,7 @@ steps:
     command: |
       go version
       go test -v ./...
-    agents:
-      queue: golang-example
 
   - label: ":mag: Run go vet"
     command: |
       go vet ./...
-    agents:
-      queue: golang-example

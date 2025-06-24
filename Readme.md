@@ -23,8 +23,14 @@ This example:
 > Check out [buildkite/golang-docker-example](https://github.com/buildkite/golang-docker-example)
 
 ## Requirements
+
 - A Buildkite agent with Go installed
-  _(or use a hosted agent image like this repo does. See [Buildkite Hosted Agents](https://buildkite.com/docs/pipelines/hosted-agents))_
+  _(or you can use a **Buildkite-hosted agent image with Go preinstalled**, like this repo does — no setup needed!)_
+  See [Buildkite Hosted Agents](https://buildkite.com/docs/pipelines/hosted-agents) for details.
+
+> 💡 In this example, the default queue is set in the Buildkite **Pipeline Settings → Steps** UI,
+> so there's no need to specify it inside the `.buildkite/pipeline.yml` file.
+
 
 ## To try it yourself
 
