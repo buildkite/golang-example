@@ -5,3 +5,9 @@ steps:
       go test -v ./...
     agents:
       queue: golang-example
+
+  - label: ":mag: Run go vet"
+    command: |
+      go vet ./...
+    agents:
+      queue: golang-example
