@@ -1,11 +1,13 @@
 # Buildkite Golang Example
-
 [![Build status](https://badge.buildkite.com/aab023f2f33ab06766ed6236bc40caf0df1d9448e4f590d0ee.svg?branch=main)](https://buildkite.com/buildkite/golang-example)
-[![Add to Buildkite](https://buildkite.com/button.svg)](https://buildkite.com/new)
 
 This repository is an example of testing a [Golang](https://go.dev) project using [Buildkite](https://buildkite.com), **without using Docker**.
 
 👉 **Live Pipeline:** [buildkite.com/buildkite/golang-example](https://buildkite.com/buildkite/golang-example)
+
+See the full [Getting Started Guide](https://buildkite.com/docs/guides/getting-started) for step-by-step instructions on how to get this running, or [Add to Buildkite](https://buildkite.com/new) to try it yourself.
+
+[![Add to Buildkite](https://buildkite.com/button.svg)](https://buildkite.com/new)
 
 ## How it works
 
