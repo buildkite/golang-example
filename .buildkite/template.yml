@@ -4,7 +4,6 @@ emoji: ":golang:"
 color: "#EFF9FF"
 languages:
   - "Go"
-  - "YAML"
 steps:
   - label: ":pipeline:"
     command: "buildkite-agent pipeline upload"
