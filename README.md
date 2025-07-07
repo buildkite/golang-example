@@ -1,6 +1,6 @@
 # Buildkite Golang Example
 
-[![Build status](https://badge.buildkite.com/aab023f2f33ab06766ed6236bc40caf0df1d9448e4f590d0ee.svg?branch=main)](https://buildkite.com/buildkite/golang-example)
+[![Build status](https://badge.buildkite.com/aab023f2f33ab06766ed6236bc40caf0df1d9448e4f590d0ee.svg?branch=main)](https://buildkite.com/buildkite/golang-example/builds/latest?branch=main)
 [![Add to Buildkite](https://img.shields.io/badge/Add%20to%20Buildkite-14CC80)](https://buildkite.com/new)
 
 This repository is an example [Buildkite](https://buildkite.com/) pipeline that runs and tests a [Golang](https://go.dev) project **without using Docker**.
@@ -39,4 +39,4 @@ This example:
 
 ## License
 
-See [Licence.md](LICENSE.md) (MIT)
+See [LICENSE.md](LICENSE.md) (MIT)
