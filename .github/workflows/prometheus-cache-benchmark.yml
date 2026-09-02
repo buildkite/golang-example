@@ -1,0 +1,27 @@
+# THROWAWAY — A-1819 companion (GHA native cache benchmark). Branch-only,
+# not part of golang-example's actual example content. Delete this file
+# (and the branch) once the benchmark work is done.
+name: prometheus-build-benchmark
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout prometheus/prometheus
+        uses: actions/checkout@v4
+        with:
+          repository: prometheus/prometheus
+          ref: 9c8c131e849264f1dd210c89e5232dc9d1723536
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.0'
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Build
+        run: go build ./...
