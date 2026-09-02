@@ -4,7 +4,9 @@
 name: prometheus-build-benchmark
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - a-1819-gha-cache-benchmark
 
 jobs:
   build:
