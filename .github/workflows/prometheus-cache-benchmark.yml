@@ -1,29 +1,319 @@
 # THROWAWAY — A-1819 companion (GHA native cache benchmark). Branch-only,
 # not part of golang-example's actual example content. Delete this file
 # (and the branch) once the benchmark work is done.
-name: prometheus-build-benchmark
+#
+# Mirrors the Buildkite/Depot benchmark's four scenarios (cold/populate/
+# warm/incremental, 10 reps each) but uses GitHub Actions' own idioms:
+# matrix jobs instead of a bash loop (each rep gets a genuinely fresh
+# runner, closer to how GHA caching is actually used in practice), and
+# actions/cache/restore + actions/cache/save (the same primitives
+# actions/setup-go's cache:true uses internally) instead of buildkite-agent
+# cache, so restore/save duration is measured explicitly like the other
+# two backends.
+name: prometheus-cache-benchmark
 
 on:
   push:
     branches:
       - a-1819-gha-cache-benchmark
 
+env:
+  PROMETHEUS_COMMIT: 9c8c131e849264f1dd210c89e5232dc9d1723536
+  GO_VERSION: "1.26.0"
+  # Cache keys are immutable once saved — bump this if a redo needs a
+  # genuinely clean cache state instead of hitting a stale prior save.
+  CACHE_EPOCH: v1
+  CACHE_KEY: gha-gocache-9c8c131e84-go1.26.0-v1
+
 jobs:
-  build:
+  cold:
+    name: "cold (no cache) rep ${{ matrix.rep }}"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
-      - name: Checkout prometheus/prometheus
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: prometheus/prometheus
-          ref: 9c8c131e849264f1dd210c89e5232dc9d1723536
+          ref: ${{ env.PROMETHEUS_COMMIT }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - uses: actions/setup-go@v5
         with:
-          go-version: '1.26.0'
-          cache: true
-          cache-dependency-path: go.sum
+          go-version: ${{ env.GO_VERSION }}
+          cache: false # deliberately skip GHA's cache for a genuine no-cache baseline
 
-      - name: Build
-        run: go build ./...
+      - name: Build (timed)
+        id: build
+        run: |
+          start=$(date +%s.%N)
+          go build ./...
+          end=$(date +%s.%N)
+          echo "seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_OUTPUT"
+
+      - name: Write result
+        run: |
+          mkdir -p results
+          cat > "results/gha-cold-${{ matrix.rep }}.json" <<EOF
+          {"backend":"gha","scenario":"cold","rep":${{ matrix.rep }},"build_seconds":${{ steps.build.outputs.seconds }}}
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gha-cold-${{ matrix.rep }}
+          path: results/*.json
+          retention-days: 14
+
+  populate:
+    name: "populate cache"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: prometheus/prometheus
+          ref: ${{ env.PROMETHEUS_COMMIT }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false # we manage the cache explicitly below, avoid double-caching
+
+      - name: Restore cache (timed, expect miss)
+        id: restore
+        run: echo "start=$(date +%s.%N)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/restore@v4
+        id: cache_restore
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Mark restore duration
+        run: |
+          end=$(date +%s.%N)
+          echo "restore_seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_ENV"
+          echo "cache hit: ${{ steps.cache_restore.outputs.cache-hit }}"
+
+      - name: Build (timed)
+        id: build
+        run: |
+          start=$(date +%s.%N)
+          go build ./...
+          end=$(date +%s.%N)
+          echo "seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_OUTPUT"
+
+      - name: Save cache (timed)
+        run: echo "save_start=$(date +%s.%N)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Write result
+        run: |
+          end=$(date +%s.%N)
+          save_seconds=$(python3 -c "print(f'{$end - $save_start:.3f}')")
+          mkdir -p results
+          cat > results/gha-populate.json <<EOF
+          {"backend":"gha","scenario":"populate","rep":1,"build_seconds":${{ steps.build.outputs.seconds }},"cache_restore_seconds":${restore_seconds},"cache_save_seconds":${save_seconds}}
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gha-populate
+          path: results/*.json
+          retention-days: 14
+
+  warm:
+    name: "warm (unchanged) rep ${{ matrix.rep }}"
+    needs: populate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: prometheus/prometheus
+          ref: ${{ env.PROMETHEUS_COMMIT }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Restore cache (timed)
+        run: echo "start=$(date +%s.%N)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/restore@v4
+        id: cache_restore
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Mark restore duration
+        run: |
+          end=$(date +%s.%N)
+          echo "restore_seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_ENV"
+          echo "cache hit: ${{ steps.cache_restore.outputs.cache-hit }}"
+
+      - name: Build (timed)
+        id: build
+        run: |
+          start=$(date +%s.%N)
+          go build ./...
+          end=$(date +%s.%N)
+          echo "seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_OUTPUT"
+
+      - name: Write result
+        run: |
+          mkdir -p results
+          cat > "results/gha-warm-${{ matrix.rep }}.json" <<EOF
+          {"backend":"gha","scenario":"warm","rep":${{ matrix.rep }},"build_seconds":${{ steps.build.outputs.seconds }},"cache_restore_seconds":${restore_seconds}}
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gha-warm-${{ matrix.rep }}
+          path: results/*.json
+          retention-days: 14
+
+  incremental:
+    name: "incremental rep ${{ matrix.rep }}"
+    needs: populate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: prometheus/prometheus
+          ref: ${{ env.PROMETHEUS_COMMIT }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Restore cache (timed)
+        run: echo "start=$(date +%s.%N)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/restore@v4
+        id: cache_restore
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Mark restore duration
+        run: |
+          end=$(date +%s.%N)
+          echo "restore_seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_ENV"
+
+      - name: Trivial source touch
+        run: printf '\n// benchmark-touch %s\n' "$(date +%s.%N)-${{ matrix.rep }}" >> cmd/prometheus/main.go
+
+      - name: Build (timed)
+        id: build
+        run: |
+          start=$(date +%s.%N)
+          go build ./...
+          end=$(date +%s.%N)
+          echo "seconds=$(python3 -c "print(f'{$end - $start:.3f}')")" >> "$GITHUB_OUTPUT"
+
+      - name: Save cache (timed)
+        run: echo "save_start=$(date +%s.%N)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ env.CACHE_KEY }}-incremental-${{ matrix.rep }}
+
+      - name: Write result
+        run: |
+          end=$(date +%s.%N)
+          save_seconds=$(python3 -c "print(f'{$end - $save_start:.3f}')")
+          mkdir -p results
+          cat > "results/gha-incremental-${{ matrix.rep }}.json" <<EOF
+          {"backend":"gha","scenario":"incremental","rep":${{ matrix.rep }},"build_seconds":${{ steps.build.outputs.seconds }},"cache_restore_seconds":${restore_seconds},"cache_save_seconds":${save_seconds}}
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gha-incremental-${{ matrix.rep }}
+          path: results/*.json
+          retention-days: 14
+
+  summarize:
+    name: "summarize"
+    needs: [cold, populate, warm, incremental]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: gha-*
+          path: results
+          merge-multiple: true
+
+      - name: Aggregate
+        run: |
+          python3 - <<'PY'
+          import glob, json, statistics, os
+
+          def percentile(sorted_vals, pct):
+              if not sorted_vals:
+                  return None
+              k = (len(sorted_vals) - 1) * pct
+              f = int(k)
+              c = min(f + 1, len(sorted_vals) - 1)
+              if f == c:
+                  return sorted_vals[f]
+              return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
+
+          by_scenario = {}
+          for path in glob.glob("results/*.json"):
+              with open(path) as f:
+                  row = json.load(f)
+              by_scenario.setdefault(row["scenario"], []).append(row)
+
+          lines = ["# GHA native cache benchmark summary (A-1819)", ""]
+          lines.append("| scenario | build median (s) | build p95 (s) | cache restore median (s) | cache save median (s) | n |")
+          lines.append("|---|---|---|---|---|---|")
+          for scenario, rows in sorted(by_scenario.items()):
+              builds = sorted(r["build_seconds"] for r in rows)
+              restores = sorted(r["cache_restore_seconds"] for r in rows if r.get("cache_restore_seconds") is not None)
+              saves = sorted(r["cache_save_seconds"] for r in rows if r.get("cache_save_seconds") is not None)
+              b_med = statistics.median(builds)
+              b_p95 = percentile(builds, 0.95)
+              r_med = statistics.median(restores) if restores else ""
+              s_med = statistics.median(saves) if saves else ""
+              lines.append(f"| {scenario} | {b_med:.3f} | {b_p95:.3f} | {r_med if r_med=='' else f'{r_med:.3f}'} | {s_med if s_med=='' else f'{s_med:.3f}'} | {len(builds)} |")
+
+          summary = "\n".join(lines) + "\n"
+          os.makedirs("results", exist_ok=True)
+          with open("results/summary.md", "w") as f:
+              f.write(summary)
+          print(summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write(summary)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gha-summary
+          path: results/summary.md
+          retention-days: 14
