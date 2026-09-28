@@ -3,7 +3,12 @@ steps:
   - label: ":go: Run tests"
     command: |
       go version
+      export GO_CACHE_VERSION="$$(go env GOVERSION)"
+      export GOMODCACHE="$$HOME/.cache/buildkite-golang-example/mod"
+      export GOCACHE="$$HOME/.cache/buildkite-golang-example/build"
+      buildkite-agent cache restore
       go test -v ./...
+      buildkite-agent cache save
 
   - label: ":mag: Run go vet"
     command: |

@@ -24,6 +24,8 @@ This example:
 - Uses Go’s built-in `testing` package with [Testify](https://github.com/stretchr/testify) for assertions.
 - Runs `go test` and `go vet` via `.buildkite/pipeline.yml`
 - Runs on a Buildkite-hosted agent with Go preinstalled (no Docker setup needed)
+- Uses [Buildkite Cache](https://buildkite.com/docs/pipelines/configure/cache) in the
+  test step to reuse downloaded Go modules and compiled packages across builds.
 
 > 🐳 Interested in a Docker-based Go example instead?
 > Check out [buildkite/golang-docker-example](https://github.com/buildkite/golang-docker-example)
