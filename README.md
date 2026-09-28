@@ -53,15 +53,18 @@ than evaluating variables on the agent that uploads the pipeline.
 The cache key includes:
 
 - `golang-example-v1`: a namespace and format version; bump it to start fresh.
+- The pipeline and branch, so the cluster's default registry doesn't share this
+  cache between copies of the example or between branches.
 - The agent's OS and architecture, and the actual Go toolchain version.
 - A checksum of `go.mod`, `go.sum`, and Go source files, so dependency and source
   changes can save a new entry instead of leaving an older compilation cache unchanged.
 
-`fallback_limit` keeps the namespace, platform, and Go version mandatory but
-allows restoring an older dependency/source snapshot. Go still resolves required
-modules and validates its compilation cache, downloading or rebuilding anything
-missing or changed. A cache miss also works: the tests populate both directories
-from scratch. This example assumes Go targets the agent's native platform.
+`fallback_limit` keeps the namespace, pipeline, branch, platform, and Go version
+mandatory but allows restoring an older dependency/source snapshot. Go still
+resolves required modules and validates its compilation cache, downloading or
+rebuilding anything missing or changed. A cache miss also works: the tests populate
+both directories from scratch. This example assumes Go targets the agent's native
+platform.
 
 To verify it on Buildkite, run the pipeline twice on clean hosted agents with the
 same commit and Go version. Check the first run's restore/save logs, then confirm

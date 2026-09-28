@@ -2,6 +2,8 @@ caches:
   - name: go
     cache_key:
       - golang-example-v1
+      - { agent: pipeline }
+      - { agent: branch }
       - { agent: os }
       - { agent: arch }
       - { env: GO_CACHE_VERSION, fallback_limit: true }
